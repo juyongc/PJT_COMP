@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+<!-- 부트스트랩 추가용    -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+    <link th:href="@{/css/index.css}" rel="stylesheet" type="text/css">
+    <title>홈페이지</title>
+</head>
+
+<body>
+<!-- As a link -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">CORP</a>
+<!--        <a class="me-2" type="search" placeholder="Search" aria-label="Search">Navbar</a>-->
+        <div th:if="${check == 1}" class="row">
+<!--            <p class="col" th:text="${nickname} + 님">사용자 닉네임</p>-->
+            <div class="col">
+                <button class="w-100 btn btn-outline-light btn-lg"
+                        th:onclick="|location.href='@{/api/test}'|" type="submit">
+                    관심기업
+                </button>
+            </div>
+            <div class="col">
+                <form th:action="@{api/logout}" method="post">
+                    <button class="w-100 btn btn-outline-light btn-lg" type="submit">
+                        로그아웃
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div th:unless="${check == 1}" class="row">
+            <div class="col">
+                <button class="w-100 btn btn-outline-light btn-lg"
+                        th:onclick="|location.href='@{/api/login}'|" type="submit"> 로그인 </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<br>
+<h1>기업 분석 테이블</h1>
+<form th:action th:object="${form}" method="post" class="row g-3">
+    <div class="col-3">
+        <label for="name" class="text-center fs-4 fw-bold col-sm-3 col-form-label">기업명</label>
+    </div>
+    <div class="col-6">
+        <input type="text" list="datalistOptions" id="name" th:field="*{name}" placeholder="기업명을 입력해주세요..." class="form-control">
+<!--        검색어 비동기 처리하려고 만들고 있는데 잘 안되네...-->
+        <datalist id="datalistOptions">
+            <option value="San Francisco">
+            <option value="New York">
+        </datalist>
+    </div>
+    <div class="col-3">
+        <button class="btn btn-dark mb-3" type="submit">전송</button>
+    </div>
+
+
+</form>
+<!--STOCK INFOs-->
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">회사명</th>
+        <th scope="col">종목번호</th>
+        <th scope="col">발행주식 총 수</th>
+        <th scope="col">유통주식수</td>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="map : ${stockInfo}">
+        <td><span th:text="${map.corpName}">회사명</span></td>
+        <td><span th:text="${map.stockCode}">종목번호</span></td>
+        <td><span th:text="${map.publishNum}">발행주식 총 수</span></td>
+        <td><span th:text="${map.circulateNum}">유통주식수</span></td>
+    </tr>
+    </tbody>
+</table>
+
+<!--재무제표 정보-->
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">2019</th>
+        <th scope="col">2020</th>
+        <th scope="col">2021</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="row">매출액</th>
+        <td th:text="${st1.revenue}">-</td>
+        <td th:text="${st2.revenue}">-</td>
+        <td th:text="${st3.revenue}">-</td>
+    </tr>
+
+    <tr>
+        <th scope="row">영업이익</th>
+        <td th:text="${st1.operIncome}">-</td>
+        <td th:text="${st2.operIncome}">-</td>
+        <td th:text="${st3.operIncome}">-</td>
+    </tr>
+    <tr>
+        <th scope="row">법인세 전 순이익</th>
+        <td th:text="${st1.befTax}">-</td>
+        <td th:text="${st2.befTax}">-</td>
+        <td th:text="${st3.befTax}">-</td>>
+    </tr>
+    <tr>
+        <th scope="row">당기순이익</th>
+        <td th:text="${st1.netIncome}">-</td>
+        <td th:text="${st2.netIncome}">-</td>
+        <td th:text="${st3.netIncome}">-</td>
+    </tr>
+    <tr>
+        <th scope="row">유동자산</th>
+        <td th:text="${st1.currentAsset}">-</td>
+        <td th:text="${st2.currentAsset}">-</td>
+        <td th:text="${st3.currentAsset}">-</td>
+    </tr>
+    <tr>
+        <th scope="row">자산총계</th>
+        <td th:text="${st1.totAsset}">-</td>
+        <td th:text="${st2.totAsset}">-</td>
+        <td th:text="${st3.totAsset}">-</td>
+    </tr>
+    <tr>
+        <th scope="row">유동부채</th>
+        <td th:text="${st1.currentDebt}">-</td>
+        <td th:text="${st2.currentDebt}">-</td>
+        <td th:text="${st3.currentDebt}">-</td>
+    </tr>
+    <tr>
+        <th scope="row">부채총계</th>
+        <td th:text="${st1.totDebt}">-</td>
+        <td th:text="${st2.totDebt}">-</td>
+        <td th:text="${st3.totDebt}">-</td>
+    </tr>
+    </tbody>
+
+</table>
+</body>
+
+</html>

@@ -1,0 +1,7 @@
+
+# 젠킨스로 받은 jar 파일 배포하는 도커파일
+
+FROM openjdk:11-jdk
+ARG JAR_FILE=comp-0.0.1-SNAPSHOT.jar
+COPY ${JAR_FILE} comp.jar
+ENTRYPOINT ["java","-jar","-Dserver.port=8080", "comp.jar"]
