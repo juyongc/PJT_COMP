@@ -1,4 +1,0 @@
-# PJT_COMP_DEPLOY2
-- git webhook check
-- DEPLOY TEST!
-- CHECK GREEN BLUE!
