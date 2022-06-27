@@ -56,7 +56,8 @@ public class StockInfoService {
 
         // Dart에서 기업의 주식수 관련 정보 가져오기
         StringBuilder sb = new StringBuilder("https://opendart.fss.or.kr/api/stockTotqySttus.json?");
-        sb.append("crtfc_key=" + "244ee64d3bdf61a52cb8aaad420023c2a53fd480");
+        // crtfc_key 삭제
+        sb.append("crtfc_key=" + "-");
         sb.append("&corp_code=" + corpCode);
         sb.append("&bsns_year=" + year);
         sb.append("&reprt_code=" + "11011");
