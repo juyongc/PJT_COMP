@@ -40,7 +40,8 @@ public class CorpAnalysisService {
 
         // Dart open api 통신
         StringBuilder sb = new StringBuilder("https://opendart.fss.or.kr/api/fnlttMultiAcnt.json?");
-        sb.append("crtfc_key=" + "244ee64d3bdf61a52cb8aaad420023c2a53fd480");
+        // crtfc_key 삭제
+        sb.append("crtfc_key=" + "-");
         sb.append("&" + "corp_code=" + corpCode);
         sb.append("&" + "bsns_year=" + "2021");
         sb.append("&" + "reprt_code=" + "11011");
