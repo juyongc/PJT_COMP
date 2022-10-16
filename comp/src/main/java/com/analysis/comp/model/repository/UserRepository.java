@@ -12,6 +12,12 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
+    UserEntity getByNickname(String nickName);
+
+    // 유저 관심 기업 fetch join으로 N+1 문제 해결
+    @Query("select distinct u from UserEntity u left join fetch u.favoriteCorpList")
+    List<UserEntity> findAllUsers();
+
     // 존재하는 이메일인지 확인
     @Query("select u.email from UserEntity as u where :email = u.email")
     String existByEmail(@Param("email") String email);
@@ -30,4 +36,5 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("select u from UserEntity as u where :email = u.email")
     Optional<UserEntity> getAllByEmail(@Param("email") String email);
+
 }

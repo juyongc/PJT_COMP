@@ -17,8 +17,8 @@ import javax.persistence.Table;
 public class CorpCodeEntity {
 
     @Id
-    String corpName;
+    private String corpName;
     @NotNull
-    String corpCode;
-    String stockCode;
+    private String corpCode;
+    private String stockCode;
 }

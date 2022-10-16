@@ -1,11 +1,15 @@
 package com.analysis.comp.controller;
 
 import com.analysis.comp.auth.JwtTokenProvider;
+import com.analysis.comp.auth.JwtTokenProviderV2;
 import com.analysis.comp.model.dto.LoginDto;
 import com.analysis.comp.model.dto.SignUpDto;
+import com.analysis.comp.model.entity.TokenEntity;
 import com.analysis.comp.model.entity.UserEntity;
+import com.analysis.comp.model.repository.TokenRepository;
 import com.analysis.comp.model.repository.UserRepository;
 import com.analysis.comp.service.AccountServiceImpl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,13 +29,16 @@ import javax.validation.Valid;
 
 @Slf4j
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/api")
 public class AccountController {
 
     @Autowired
     private AccountServiceImpl accountServiceImpl;
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenProviderV2 jwtTokenProvider;
+    @Autowired
+    private TokenRepository tokenRepository;
 
 
     @GetMapping("/test")
@@ -62,7 +69,6 @@ public class AccountController {
      */
     @GetMapping("/login")
     public String login(@ModelAttribute("login") LoginDto loginDto) {
-        log.info("로그인페이징빈다!");
         return "api/analysis/loginForm";
     }
 
@@ -80,16 +86,21 @@ public class AccountController {
         }
 
         UserDetails userEntity = accountServiceImpl.loadUserByUsername(loginDto.getEmail());
-        String token = jwtTokenProvider.createToken(loginDto.getEmail());
-// 클라이언트가 없어서 헤더에 넣는 방법을 모르겠다. => 쿠키로 대체
+
 //        response.addHeader("Authorization", token);
 //        res.addHeader("Refresh", newToken.getRefreshToken());
 //        response.setContentType("application/json;charset=UTF-8");
 
-        Cookie authorization = new Cookie("Authorization", token);
-        authorization.setPath("/");
-        response.addCookie(authorization);
-
+        TokenEntity token = jwtTokenProvider.createToken(loginDto.getEmail());
+        tokenRepository.save(new TokenEntity(token.getAccessToken(), token.getRefreshToken()));
+        // 클라이언트가 없어서 헤더에 넣는 방법을 모르겠다. => 쿠키로 대체
+        Cookie accessToken = new Cookie("AccessToken", token.getAccessToken());
+        Cookie refreshToken = new Cookie("RefreshToken", token.getRefreshToken());
+        accessToken.setPath("/");
+        refreshToken.setPath("/");
+        response.addCookie(accessToken);
+        response.addCookie(refreshToken);
+        log.info("Login = {}",response.toString());
         // redirectURL 주니까 에러나서 일단 변경
         return "redirect:/api";
     }
@@ -97,10 +108,14 @@ public class AccountController {
     @PostMapping("/logout")
     public String logout(HttpServletResponse response) {
         log.info("LOGOUT");
-        Cookie cookie = new Cookie("Authorization", "");
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
-        response.addCookie(cookie);
+        Cookie accessToken = new Cookie("AccessToken", "");
+        Cookie refreshToken = new Cookie("RefreshToken", "");
+        accessToken.setMaxAge(0);
+        refreshToken.setMaxAge(0);
+        accessToken.setPath("/");
+        refreshToken.setPath("/");
+        response.addCookie(accessToken);
+        response.addCookie(refreshToken);
         return "redirect:/api";
 
     }

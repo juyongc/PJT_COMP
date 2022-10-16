@@ -26,8 +26,8 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-//        passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
         UserEntity userEntity = userRepository.getAllByEmail(username).get();
+//        passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 //        String encodePw = passwordEncoder.encode(userEntity.getPw());
 //        userEntity.setPw(encodePw);
 

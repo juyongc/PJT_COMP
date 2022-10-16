@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.util.*;
 
 @Slf4j
 @AllArgsConstructor
+@Transactional
 @Service
 public class CorpAnalysisService {
 
@@ -40,8 +42,7 @@ public class CorpAnalysisService {
 
         // Dart open api 통신
         StringBuilder sb = new StringBuilder("https://opendart.fss.or.kr/api/fnlttMultiAcnt.json?");
-        // crtfc_key 삭제
-        sb.append("crtfc_key=" + "-");
+        sb.append("crtfc_key=" + "244ee64d3bdf61a52cb8aaad420023c2a53fd480");
         sb.append("&" + "corp_code=" + corpCode);
         sb.append("&" + "bsns_year=" + "2021");
         sb.append("&" + "reprt_code=" + "11011");
@@ -75,16 +76,16 @@ public class CorpAnalysisService {
         JSONArray jsonArr = (JSONArray) jObj.get("list");
 
 //         유동자산, 자산총계, 유동부채, 부채총계, 매출액, 영업이익, 법인세 전 순이익, 당기순이익
-        ArrayList<String> yearCurrentList = new ArrayList<>();
-        ArrayList<String> yearAgoList = new ArrayList<>();
-        ArrayList<String> yearAgoAgoList = new ArrayList<>();
+        ArrayList<Long> yearCurrentList = new ArrayList<>();
+        ArrayList<Long> yearAgoList = new ArrayList<>();
+        ArrayList<Long> yearAgoAgoList = new ArrayList<>();
         final Set<Integer> needNum = new HashSet<>(Arrays.asList(0, 2, 3, 5, 9, 10, 11, 12));
         for (int i=0; i < 13; i++) {
             if (needNum.contains(i)) {
                 JSONObject jObj2 = (JSONObject) parser.parse(String.valueOf(jsonArr.get(i)));
-                String yearCurrentInfo = String.valueOf(jObj2.get("thstrm_amount"));
-                String yearAgoInfo = String.valueOf(jObj2.get("frmtrm_amount"));
-                String yearAgoAgoInfo = String.valueOf(jObj2.get("bfefrmtrm_amount"));
+                Long yearCurrentInfo = Long.valueOf(((String) jObj2.get("thstrm_amount")).replace(",",""));
+                Long yearAgoInfo = Long.valueOf(((String) jObj2.get("frmtrm_amount")).replace(",",""));
+                Long yearAgoAgoInfo = Long.valueOf(((String) jObj2.get("bfefrmtrm_amount")).replace(",",""));
                 yearCurrentList.add(yearCurrentInfo);
                 yearAgoList.add(yearAgoInfo);
                 yearAgoAgoList.add(yearAgoAgoInfo);

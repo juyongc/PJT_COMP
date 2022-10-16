@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- 부트스트랩 추가용    -->
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+    <script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+
+    <link th:href="@{/css/index.css}" rel="stylesheet" type="text/css">
+    <title>홈페이지</title>
+</head>
+
+<body>
+<!-- As a link -->
+<nav class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/api}">CORP</a>
+        <div th:if="${check == 1}" class="row">
+            <div class="col">
+                <form th:action="@{/api/logout}" method="post">
+                    <button class="w-100 btn btn-outline-light btn-lg" type="submit">
+                        로그아웃
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div th:unless="${check == 1}" class="row">
+            <div class="col">
+                <button class="w-100 btn btn-outline-light btn-lg"
+                        th:onclick="|location.href='@{/api/login}'|" type="submit"> 로그인 </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<br>
+<h1>관심 기업</h1>
+<div>
+    <h1>기업 조건 검색</h1>
+
+</div>
+
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.analysis.comp.controller;
 
 import com.analysis.comp.auth.JwtTokenProvider;
+import com.analysis.comp.auth.JwtTokenProviderV2;
 import com.analysis.comp.model.dto.FormDto;
 import com.analysis.comp.model.dto.StatementInfoDto;
 import com.analysis.comp.model.dto.StockInfoDto;
@@ -34,7 +35,7 @@ public class CorpAnalysisController {
     @Autowired
     private CorpAnalysisService corpAnalysisService;
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenProviderV2 jwtTokenProvider;
     @Autowired
     private UserRepository userRepository;
 
@@ -44,7 +45,7 @@ public class CorpAnalysisController {
         log.info("COMING HOME");
         String token = jwtTokenProvider.resolveToken(request);
         log.info("HELLO TOKEN = {}",token);
-        if (token != "" && jwtTokenProvider.validateToken(token)) {
+        if (token != "" && jwtTokenProvider.verifyToken(token)) {
             String email = jwtTokenProvider.getUserEmail(token);
             String nickname = userRepository.getNicknameByEmail(email);
             model.addAttribute("check", 1);
@@ -72,7 +73,7 @@ public class CorpAnalysisController {
         log.info("COMING HOME");
         String token = jwtTokenProvider.resolveToken(request);
         log.info("HELLO TOKEN = {}",token);
-        if (token != "" && jwtTokenProvider.validateToken(token)) {
+        if (token != "" && jwtTokenProvider.verifyToken(token)) {
             String email = jwtTokenProvider.getUserEmail(token);
             String nickname = userRepository.getNicknameByEmail(email);
             model.addAttribute("check", 1);

@@ -2,10 +2,12 @@ package com.analysis.comp.auth;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @Data
 public class OAuth2Attribute {
 
@@ -22,11 +24,18 @@ public class OAuth2Attribute {
         this.nickname = nickname;
     }
 
+    /**
+     * OAuth2 정보 요청하기
+     * 현재는 카카오만 만들어놨음
+     */
     public static OAuth2Attribute of(String registrationId, String userNameAttributeName, Map<String, Object> attributes){
 
         return ofKakao("id", attributes);
     }
 
+    /**
+     * 카카오 OAuth2 요청한 정보 데이터 추출하기
+     */
     public static OAuth2Attribute ofKakao(String userNameAttribute, Map<String, Object> attributes) {
         Map<String, Object> kakaoAccount = (Map<String, Object>)attributes.get("kakao_account");
         Map<String, Object> kakaoProfile = (Map<String, Object>)kakaoAccount.get("profile");
@@ -41,7 +50,7 @@ public class OAuth2Attribute {
     }
 
     /**
-     * Map 형식으로 만들기
+     * 유저 정보 Map 형식으로 변환
      */
     public Map<String, Object> convertToMap() {
         Map<String, Object> map = new HashMap<>();
