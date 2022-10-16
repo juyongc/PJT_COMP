@@ -1,5 +1,7 @@
 package com.analysis.comp.auth;
 
+import com.analysis.comp.model.entity.TokenEntity;
+import com.analysis.comp.model.repository.TokenRepository;
 import com.analysis.comp.service.AccountServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,11 @@ import java.io.IOException;
 public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtTokenProviderV2 jwtTokenProvider;
     @Autowired
     private AccountServiceImpl accountServiceImpl;
-
+    @Autowired
+    private TokenRepository tokenRepository;
     /**
      * 인증 성공 후, 일어날 절차 생성 메서드
      * JWT 토큰 생성 및 헤더에 추가 및 반환
@@ -31,11 +34,14 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
         log.info(String.valueOf(authentication));
-        String token = jwtTokenProvider.createToken(authentication.getName());
-
-        Cookie authorization = new Cookie("Authorization", token);
-        authorization.setPath("/");
-        response.addCookie(authorization);
+        TokenEntity token = jwtTokenProvider.createToken(authentication.getName());
+        tokenRepository.save(new TokenEntity(token.getAccessToken(), token.getRefreshToken()));
+        Cookie accessToken = new Cookie("AccessToken", token.getAccessToken());
+        Cookie refreshToken = new Cookie("RefreshToken", token.getRefreshToken());
+        accessToken.setPath("/");
+        refreshToken.setPath("/");
+        response.addCookie(accessToken);
+        response.addCookie(refreshToken);
         getRedirectStrategy().sendRedirect(request,response,"/api");
 //        String targetUrl = "http://localhost:8080/api/oauth2/" + token;
 //        log.info(targetUrl);

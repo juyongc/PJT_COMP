@@ -31,7 +31,7 @@ public class JwtTokenProvider {
 
 
     /**
-     * 스크릿키 암호화
+     * 스크릿키 base64 encoding
      */
     @PostConstruct
     protected void init() {
@@ -40,13 +40,14 @@ public class JwtTokenProvider {
 
     /**
      * jwt 토큰 생성
+     * 클레임 : 이메일, 생성 시간, 유효 기간
      */
     public String createToken(String email) {
-        Claims claims = Jwts.claims().setSubject(email);
+        Claims claimEmail = Jwts.claims().setSubject(email);
         Date now = new Date();
-
+        log.info("secret key = " + secretKey);
         return Jwts.builder()
-                .setClaims(claims)
+                .setClaims(claimEmail)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidTime))
                 .signWith(SignatureAlgorithm.HS256, secretKey)

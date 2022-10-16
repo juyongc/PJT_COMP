@@ -11,8 +11,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
+@Transactional
 @Service
 public class AccountServiceImpl implements AccountService, UserDetailsService {
 
@@ -20,6 +22,10 @@ public class AccountServiceImpl implements AccountService, UserDetailsService {
     private UserRepository userRepository;
     private final PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
+    /**
+     * 이메일 회원가입 여부 확인
+     * 있으면 - false, 없으면 - true
+     */
     @Override
     public boolean checkEmail(String email) {
         if (email.equals(userRepository.existByEmail(email))) {

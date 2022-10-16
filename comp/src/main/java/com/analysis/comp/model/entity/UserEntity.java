@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Data
@@ -20,6 +19,7 @@ public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "USERPK")
     private Long userpk;
     @NotNull
     private String email;
@@ -28,11 +28,22 @@ public class UserEntity implements UserDetails {
     @NotNull
     private String pw;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<UserFavoriteCorpEntity> favoriteCorpList = new ArrayList<>();
+
+
     @Builder
     public UserEntity(String email, String nickname, String pw) {
         this.setEmail(email);
         this.setNickname(nickname);
         this.setPw(pw);
+    }
+
+    public void addFavoriteCorp(UserFavoriteCorpEntity favoriteCorp) {
+        this.favoriteCorpList.add(favoriteCorp);
+        if (favoriteCorp.getUser() != this) {
+            favoriteCorp.setUser(this);
+        }
     }
 
     @Override

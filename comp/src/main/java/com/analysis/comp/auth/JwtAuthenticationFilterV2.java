@@ -1,11 +1,11 @@
 package com.analysis.comp.auth;
 
-import com.analysis.comp.model.entity.TokenEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -18,26 +18,28 @@ import java.io.IOException;
 
 @Slf4j
 @RequiredArgsConstructor
-public class JwtAuthenticationFilter extends GenericFilterBean {
+/***
+ * httpservletRequest,Response 사용하기 위해 상속 변경
+ */
+public class JwtAuthenticationFilterV2 extends OncePerRequestFilter {
 
     private final JwtTokenProviderV2 jwtTokenProvider;
-
 
     /**
      * JWT 토큰 유효성 확인 필터
      */
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // JWT 토큰 가져오기
         log.info("filter request check = {}");
-        String token = jwtTokenProvider.resolveToken((HttpServletRequest) request);
+        String token = jwtTokenProvider.resolveToken(request);
         log.info("filter token = {}",token);
 
-        if (token != "") {
-            Cookie accessToken = new Cookie("AccessToken", token);
-            accessToken.setPath("/");
-            ((HttpServletResponse) response).addCookie(accessToken);
-        }
+//        if (token != "") {
+//            Cookie accessToken = new Cookie("AccessToken", token);
+//            accessToken.setPath("/");
+//            response.addCookie(accessToken);
+//        }
 
         // 토큰 유효성 확인
         if (token != "" && jwtTokenProvider.verifyToken(token)) {
@@ -45,7 +47,10 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);       // SecurityContext에 Authentication 객체 저장
             log.info("CHECK AUTHENTICATION = {}",authentication);
         }
-        chain.doFilter(request,response);
+        filterChain.doFilter(request,response);
     }
+
+
+
 
 }

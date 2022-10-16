@@ -41,9 +41,10 @@ public class OAuth2AccountService implements OAuth2UserService<OAuth2UserRequest
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
+        // OAuth2로 사용자 인증 및 정보 가져오기
         OAuth2Attribute oAuth2Attribute = OAuth2Attribute.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
-        // OAuth2로 가져온 정보 map형식으로 만들기
         Map<String, Object> oAuth2AttributeToMap = oAuth2Attribute.convertToMap();
+
         // 첫 사용자는 자동 회원가입 시키기
         if (accountServiceImpl.checkEmail((String) oAuth2AttributeToMap.get("email"))) {
             String pw = UUID.randomUUID().toString().substring(0, 8);
